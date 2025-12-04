@@ -4,7 +4,7 @@ A simple, fast tool to find applicable Quality and Outcomes Framework (QOF) indi
 
 ## 🔗 Live Demo
 
-**[Use the tool here](https://YOUR_USERNAME.github.io/qof-indicator-tool/)**
+**[Use the tool here](https://ninam-q.github.io/qof-indicator-tool/)**
 
 ## Features
 
