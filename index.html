@@ -1,0 +1,2623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QOF Indicator Lookup Tool 2025/26</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #f8fafb;
+            --bg-card: #ffffff;
+            --bg-highlight: #e8f4f8;
+            --border: #e2e8f0;
+            --border-focus: #0891b2;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --accent-teal: #0891b2;
+            --accent-teal-light: #ecfeff;
+            --accent-emerald: #059669;
+            --accent-amber: #d97706;
+            --accent-rose: #e11d48;
+            --accent-violet: #7c3aed;
+            --green-bg: #dcfce7;
+            --green-border: #86efac;
+            --green-text: #166534;
+            --red-bg: #fee2e2;
+            --red-border: #fca5a5;
+            --red-text: #991b1b;
+            --amber-bg: #fef3c7;
+            --amber-border: #fde68a;
+            --amber-text: #92400e;
+            --purple-bg: #f3e8ff;
+            --purple-border: #d8b4fe;
+            --purple-text: #6b21a8;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.08);
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+        header {
+            background: var(--accent-teal);
+            padding: 12px 0;
+            margin-bottom: 24px;
+        }
+
+        header .container { position: relative; z-index: 1; }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo { display: flex; align-items: center; gap: 10px; }
+
+        .logo-icon {
+            width: 36px; height: 36px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .logo-icon svg { width: 20px; height: 20px; fill: white; }
+
+        .logo-text h1 {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .logo-text span {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+
+        .view { display: none; }
+        .view.active { display: block; animation: fadeIn 0.3s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .search-view { max-width: 700px; margin: 0 auto; }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-highlight);
+        }
+
+        .card-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-header h2 svg {
+            width: 20px; height: 20px;
+            color: var(--accent-teal);
+        }
+
+        .card-body { padding: 24px; }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group:last-child { margin-bottom: 0; }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        label .hint {
+            font-weight: 400;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        input[type="number"],
+        select,
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        input[type="number"]:focus,
+        select:focus,
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-teal);
+            box-shadow: 0 0 0 3px var(--accent-teal-light);
+        }
+
+        .search-container { position: relative; }
+        .search-input { padding-left: 44px !important; }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px; height: 20px;
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .dropdown {
+            position: absolute;
+            top: 100%; left: 0; right: 0;
+            background: var(--bg-card);
+            border: 2px solid var(--accent-teal);
+            border-top: none;
+            border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+            max-height: 240px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .dropdown.open { display: block; }
+
+        .dropdown-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.15s ease;
+        }
+
+        .dropdown-item:hover { background: var(--bg-highlight); }
+        .dropdown-item .name { font-size: 0.95rem; color: var(--text-primary); }
+
+        .dropdown-item .code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: var(--bg-primary);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .dropdown-empty {
+            padding: 16px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .selected-conditions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+            min-height: 36px;
+        }
+
+        .condition-tag {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--accent-teal-light);
+            border: 1px solid var(--accent-teal);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--accent-teal);
+            font-weight: 500;
+        }
+
+        .condition-tag .remove {
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            background: var(--accent-teal);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .condition-tag .remove:hover {
+            background: #0e7490;
+            transform: scale(1.1);
+        }
+
+        .condition-tag .remove svg { width: 12px; height: 12px; }
+
+        .no-conditions {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        .conditional-prompts {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .conditional-prompt {
+            background: var(--bg-highlight);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            animation: slideIn 0.2s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .prompt-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .prompt-label svg {
+            width: 16px;
+            height: 16px;
+            color: var(--text-muted);
+        }
+
+        .prompt-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .sex-toggle {
+            display: flex;
+            gap: 0;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        .sex-btn {
+            flex: 1;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            border: none;
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .sex-btn:first-child {
+            border-right: 1px solid var(--border);
+        }
+
+        .sex-btn:hover {
+            background: var(--bg-highlight);
+        }
+
+        .sex-btn.active {
+            background: var(--accent-teal);
+            color: white;
+        }
+
+        .prompt-btn {
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            font-family: inherit;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .prompt-btn:hover {
+            border-color: var(--accent-teal);
+            color: var(--accent-teal);
+        }
+
+        .prompt-btn.active {
+            background: var(--accent-teal);
+            border-color: var(--accent-teal);
+            color: white;
+        }
+
+        .prompt-btn.active[data-value="yes"],
+        .prompt-btn.active[data-value="unknown"] {
+            background: var(--accent-amber);
+            border-color: var(--accent-amber);
+        }
+
+        .prompt-btn.active[data-value="moderate"],
+        .prompt-btn.active[data-value="severe"] {
+            background: var(--accent-rose);
+            border-color: var(--accent-rose);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            background: linear-gradient(135deg, #0e7490 0%, #0891b2 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(8, 145, 178, 0.3);
+        }
+
+        .submit-btn:active { transform: translateY(0); }
+        .submit-btn svg { width: 20px; height: 20px; }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: inherit;
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 24px;
+        }
+
+        .back-btn:hover {
+            background: var(--bg-highlight);
+            border-color: var(--accent-teal);
+            color: var(--accent-teal);
+        }
+
+        .back-btn svg { width: 18px; height: 18px; }
+
+        .patient-summary {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .patient-summary-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .patient-summary-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+
+        .patient-summary-item svg {
+            width: 16px; height: 16px;
+            color: var(--accent-teal);
+        }
+
+        .patient-summary-item.cvd {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .patient-summary-item.status-toggle {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .patient-summary-item.status-toggle:hover {
+            border-color: var(--accent-teal);
+            transform: scale(1.02);
+        }
+
+        .patient-summary-item.status-toggle .edit-icon {
+            width: 12px;
+            height: 12px;
+            opacity: 0.6;
+            margin-left: 2px;
+        }
+
+        .patient-summary-item.status-green {
+            background: var(--green-bg);
+            color: var(--green-text);
+        }
+
+        .patient-summary-item.status-amber {
+            background: var(--amber-bg);
+            color: var(--amber-text);
+        }
+
+        .patient-summary-item.status-red {
+            background: var(--red-bg);
+            color: var(--red-text);
+        }
+
+        .patient-summary-divider {
+            width: 1px;
+            height: 24px;
+            background: var(--border);
+        }
+
+        /* Warning banners */
+        .info-banner {
+            background: var(--purple-bg);
+            border: 2px solid var(--purple-border);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .info-banner svg {
+            width: 24px;
+            height: 24px;
+            color: var(--purple-text);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .info-banner-content h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--purple-text);
+            margin-bottom: 4px;
+        }
+
+        .info-banner-content p {
+            font-size: 0.85rem;
+            color: var(--purple-text);
+            opacity: 0.9;
+        }
+
+        .workflow-hint {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: var(--accent-teal-light);
+            border: 1px solid var(--accent-teal);
+            border-radius: var(--radius-sm);
+            margin-bottom: 16px;
+            font-size: 0.85rem;
+            color: var(--accent-teal);
+        }
+
+        .workflow-hint svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .workflow-hint strong {
+            font-weight: 600;
+        }
+
+        .results-panel { display: flex; flex-direction: column; gap: 20px; }
+
+        .results-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+        }
+
+        .summary-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .results-summary-inline {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .results-summary-inline .summary-stat strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .results-summary-inline .summary-divider {
+            color: var(--text-muted);
+        }
+
+        .legend {
+            display: flex;
+            gap: 16px;
+            padding: 10px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .legend-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.green { background: var(--accent-emerald); }
+        .legend-dot.red { background: var(--accent-rose); }
+        .legend-dot.amber { background: var(--accent-amber); }
+        .legend-dot.purple { background: var(--accent-violet); }
+        .legend-dot.neutral { background: var(--text-muted); }
+
+        .indicator-section {
+            margin-bottom: 10px;
+        }
+
+        .indicator-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px 4px;
+            margin-bottom: 2px;
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .section-stats {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .category-group { border-bottom: 1px solid var(--border); }
+        .category-group:last-child { border-bottom: none; }
+
+        .category-header {
+            padding: 14px 24px;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .category-header .cat-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            background: var(--bg-card);
+            padding: 4px 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .indicator-list { padding: 2px; }
+
+        .indicator-card {
+            border-radius: var(--radius-sm);
+            margin-bottom: 3px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            transition: all 0.15s ease;
+            overflow: hidden;
+        }
+
+        .indicator-card:last-child { margin-bottom: 0; }
+
+        .indicator-card:hover {
+            border-color: var(--accent-teal);
+        }
+
+        .indicator-main {
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+            gap: 10px;
+        }
+
+        .indicator-select {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            cursor: pointer;
+            margin-top: -6px;
+        }
+
+        .indicator-select svg {
+            width: 12px;
+            height: 12px;
+            color: white;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.15s ease;
+        }
+
+        .indicator-select:hover {
+            border-color: var(--accent-teal);
+        }
+
+        .indicator-card.selected .indicator-select {
+            background: var(--accent-emerald);
+            border-color: var(--accent-emerald);
+        }
+
+        .indicator-card.selected .indicator-select svg {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .indicator-card.selected {
+            background: #f0fdf4;
+            border-color: var(--accent-emerald);
+            opacity: 0.7;
+        }
+
+        .indicator-card.selected .indicator-action {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .indicator-action {
+            flex: 1;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            line-height: 1.3;
+            cursor: pointer;
+        }
+
+        .indicator-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .status-dot.met { background: var(--accent-emerald); }
+        .status-dot.not-met { background: var(--accent-rose); }
+        .status-dot.check-history { background: var(--accent-violet); }
+        .status-dot.check-frailty { background: var(--accent-amber); }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .status-badge svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .status-badge.met {
+            background: var(--green-bg);
+            color: var(--green-text);
+        }
+
+        .status-badge.not-met {
+            background: var(--red-bg);
+            color: var(--red-text);
+        }
+
+        .status-badge.frailty,
+        .status-badge.smoking {
+            background: var(--amber-bg);
+            color: var(--amber-text);
+        }
+
+        .status-badge.history {
+            background: var(--purple-bg);
+            color: var(--purple-text);
+        }
+
+        .indicator-expand {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            transition: transform 0.2s ease;
+            flex-shrink: 0;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .indicator-expand:hover {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .indicator-expand svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .indicator-card.expanded .indicator-expand {
+            transform: rotate(180deg);
+        }
+
+        .indicator-details {
+            display: none;
+            padding: 12px 14px 14px;
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border);
+            font-size: 0.85rem;
+        }
+
+        .indicator-card.expanded .indicator-details {
+            display: block;
+        }
+
+        .detail-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .detail-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-label {
+            color: var(--text-muted);
+            min-width: 65px;
+            flex-shrink: 0;
+        }
+
+        .detail-value {
+            color: var(--text-primary);
+        }
+
+        .detail-value.code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            background: var(--bg-card);
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .detail-description {
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .detail-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .detail-tag {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .detail-tag.points {
+            background: var(--amber-bg);
+            border-color: var(--amber-border);
+            color: var(--amber-text);
+            font-weight: 600;
+        }
+
+        .history-alert {
+            background: var(--purple-bg);
+            border: 1px solid var(--purple-border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: var(--purple-text);
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .history-alert svg {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* Card status backgrounds - subtle on main, stronger on details */
+        .indicator-card.med-met {
+            border-left: 3px solid var(--accent-emerald);
+        }
+
+        .indicator-card.med-met .indicator-details {
+            background: #dcfce7;
+        }
+
+        .indicator-card.med-not-met {
+            border-left: 3px solid var(--accent-rose);
+        }
+
+        .indicator-card.med-not-met .indicator-details {
+            background: #fee2e2;
+        }
+
+        .indicator-card.frailty-dependent,
+        .indicator-card.smoking-dependent {
+            border-left: 3px solid var(--accent-amber);
+        }
+
+        .indicator-card.frailty-dependent .indicator-details,
+        .indicator-card.smoking-dependent .indicator-details {
+            background: #fef3c7;
+        }
+
+        .indicator-card.history-dependent {
+            border-left: 3px solid var(--accent-violet);
+        }
+
+        .indicator-card.history-dependent .indicator-details {
+            background: #f3e8ff;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 24px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state svg {
+            width: 64px; height: 64px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p { font-size: 0.95rem; }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: var(--bg-card);
+            padding: 6px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: inherit;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 2px solid transparent;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            background: var(--bg-highlight);
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            background: var(--accent-teal);
+            color: white;
+            border-color: var(--accent-teal);
+        }
+
+        .tab-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .tab-count {
+            background: rgba(255,255,255,0.2);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .tab-btn:not(.active) .tab-count {
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Indicator Selection */
+        .indicator-card {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .indicator-select {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 28px;
+            height: 28px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+
+        .indicator-select svg {
+            width: 16px;
+            height: 16px;
+            color: white;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.15s ease;
+        }
+
+        .indicator-card:hover .indicator-select {
+            border-color: var(--accent-teal);
+        }
+
+        .indicator-card.selected .indicator-select {
+            background: var(--accent-emerald);
+            border-color: var(--accent-emerald);
+        }
+
+        .indicator-card.selected .indicator-select svg {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .indicator-card.selected {
+            box-shadow: 0 0 0 2px var(--accent-emerald);
+        }
+
+        /* Consultation View */
+        .consultation-view {
+            min-height: 300px;
+        }
+
+        .consultation-empty {
+            text-align: center;
+            padding: 60px 24px;
+            color: var(--text-secondary);
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        .consultation-empty svg {
+            width: 64px;
+            height: 64px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .consultation-empty h3 {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .consultation-empty p {
+            font-size: 0.95rem;
+        }
+
+        .consultation-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .consultation-group {
+            margin-bottom: 12px;
+        }
+
+        .consultation-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .consultation-group-header {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 4px 0;
+            margin-bottom: 4px;
+        }
+
+        .consultation-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 4px;
+        }
+
+        .consultation-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .consultation-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .consultation-action {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #000;
+            line-height: 1.3;
+        }
+
+        .consultation-detail {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+
+        .consultation-complete {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 2px solid var(--border);
+            background: var(--bg-primary);
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .consultation-complete:hover {
+            border-color: var(--accent-emerald);
+            background: var(--accent-emerald);
+            color: white;
+        }
+
+        .consultation-complete svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .consultation-points {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--accent-amber);
+            background: var(--amber-bg);
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        .consultation-points svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Print styles for consultation */
+        @media print {
+            .tab-nav, .back-btn, .consultation-remove { display: none !important; }
+            .consultation-card { break-inside: avoid; }
+        }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        @media print {
+            header { background: #0891b2 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .back-btn { display: none; }
+        }
+
+        @media (max-width: 600px) {
+            .form-row { grid-template-columns: 1fr; }
+            .frailty-options { grid-template-columns: repeat(2, 1fr); }
+            .header-stats { display: none; }
+            .patient-summary { flex-direction: column; align-items: flex-start; }
+            .patient-summary-divider { display: none; }
+            .legend { flex-direction: column; gap: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+                    </div>
+                    <div class="logo-text">
+                        <h1>QOF Indicator Lookup<span>2025/26</span></h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Search View -->
+        <div class="view active" id="searchView">
+            <div class="search-view">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            Patient Profile
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Age Range</label>
+                                <select id="patientAge">
+                                    <option value="0-14">0-14 years (Child)</option>
+                                    <option value="15-17">15-17 years</option>
+                                    <option value="18-24">18-24 years</option>
+                                    <option value="25-39">25-39 years</option>
+                                    <option value="40-44">40-44 years</option>
+                                    <option value="45-49" selected>45-49 years</option>
+                                    <option value="50-64">50-64 years</option>
+                                    <option value="65-79">65-79 years</option>
+                                    <option value="80+">80+ years</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Sex</label>
+                                <div class="sex-toggle" id="sexToggle">
+                                    <button class="sex-btn active" data-value="male">M</button>
+                                    <button class="sex-btn" data-value="female">F</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Active Conditions</label>
+                            <div class="search-container">
+                                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                                </svg>
+                                <input type="text" id="conditionSearch" class="search-input" placeholder="Type to search conditions..." autocomplete="off">
+                                <div class="dropdown" id="conditionDropdown"></div>
+                            </div>
+                            <div class="selected-conditions" id="selectedConditions">
+                                <span class="no-conditions">No conditions selected</span>
+                            </div>
+                            
+                            <!-- Conditional prompts that appear based on selected conditions -->
+                            <div class="conditional-prompts" id="conditionalPrompts">
+                                <div class="conditional-prompt" id="smokingPrompt" style="display: none;">
+                                    <div class="prompt-label">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 12H2v4h16v-4z"/><path d="M22 12v4"/><path d="M7 12V7c0-1.1.9-2 2-2h1a2 2 0 0 1 2 2v0a2 2 0 0 0 2 2h0a2 2 0 0 1 2 2v1"/></svg>
+                                        Smoking status?
+                                    </div>
+                                    <div class="prompt-options">
+                                        <button class="prompt-btn" data-type="smoking" data-value="no">Non-smoker</button>
+                                        <button class="prompt-btn" data-type="smoking" data-value="yes">Current smoker</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="conditional-prompt" id="frailtyPrompt" style="display: none;">
+                                    <div class="prompt-label">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                                        Moderate or severe frailty?
+                                    </div>
+                                    <div class="prompt-options">
+                                        <button class="prompt-btn" data-type="frailty" data-value="none">No</button>
+                                        <button class="prompt-btn" data-type="frailty" data-value="frail">Yes</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="medicationsGroup" style="display: none;">
+                            <label>
+                                Current Medications 
+                                <span class="hint">(paste from clinical system)</span>
+                            </label>
+                            <textarea id="medicationsInput" placeholder="Paste patient's current medications here...&#10;&#10;e.g.&#10;Aspirin 75mg&#10;Atorvastatin 40mg&#10;Ramipril 5mg&#10;Bisoprolol 2.5mg&#10;Apixaban 5mg"></textarea>
+                        </div>
+
+                        <button class="submit-btn" id="findIndicatorsBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                            </svg>
+                            Find Applicable Indicators
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results View -->
+        <div class="view" id="resultsView">
+            <button class="back-btn" id="backBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m15 18-6-6 6-6"/>
+                </svg>
+                Back to Search
+            </button>
+
+            <div class="patient-summary" id="patientSummary"></div>
+
+            <!-- Tab Navigation -->
+            <div class="tab-nav">
+                <button class="tab-btn active" data-tab="all">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    All Indicators
+                    <span class="tab-count" id="allCount">0</span>
+                </button>
+                <button class="tab-btn" data-tab="selected">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Outstanding
+                    <span class="tab-count" id="selectedCount">0</span>
+                </button>
+            </div>
+
+            <!-- All Indicators Tab -->
+            <div class="tab-content active" id="allTab">
+                <div class="workflow-hint">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                    <span>Tick indicators that are <strong>already completed</strong> for this patient. Outstanding items will appear in the consultation tab.</span>
+                </div>
+                <main class="results-panel" id="resultsPanel"></main>
+            </div>
+
+            <!-- Outstanding Indicators Tab (Consultation View) -->
+            <div class="tab-content" id="selectedTab">
+                <div class="consultation-view" id="consultationView">
+                    <div class="consultation-empty" id="consultationEmpty">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                        </svg>
+                        <h3>All Indicators Outstanding</h3>
+                        <p>Tick completed indicators in the "All Indicators" tab to filter this list.</p>
+                    </div>
+                    <div class="consultation-list" id="consultationList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CVD conditions for determining primary vs secondary prevention
+        const CVD_CONDITIONS = ['chd', 'stia', 'pad', 'hf'];
+        
+        // Medication keywords mapping
+        const MEDICATION_MAPPINGS = {
+            'antiplatelet': ['aspirin', 'clopidogrel', 'prasugrel', 'ticagrelor', 'dipyridamole'],
+            'anticoagulant': ['warfarin', 'apixaban', 'rivaroxaban', 'edoxaban', 'dabigatran', 'doac', 'lmwh', 'heparin', 'enoxaparin', 'dalteparin', 'tinzaparin'],
+            'doac': ['apixaban', 'rivaroxaban', 'edoxaban', 'dabigatran'],
+            'vka': ['warfarin'],
+            'statin': ['atorvastatin', 'simvastatin', 'rosuvastatin', 'pravastatin', 'fluvastatin', 'pitavastatin'],
+            'lipid_lowering': ['atorvastatin', 'simvastatin', 'rosuvastatin', 'pravastatin', 'fluvastatin', 'pitavastatin', 'ezetimibe', 'bezafibrate', 'fenofibrate', 'gemfibrozil', 'alirocumab', 'evolocumab', 'inclisiran', 'bempedoic'],
+            'ace_inhibitor': ['ramipril', 'lisinopril', 'enalapril', 'perindopril', 'captopril', 'fosinopril', 'quinapril', 'trandolapril', 'imidapril', 'moexipril'],
+            'arb': ['losartan', 'candesartan', 'valsartan', 'irbesartan', 'olmesartan', 'telmisartan', 'eprosartan', 'azilsartan'],
+            'ace_or_arb': ['ramipril', 'lisinopril', 'enalapril', 'perindopril', 'captopril', 'fosinopril', 'quinapril', 'trandolapril', 'imidapril', 'moexipril', 'losartan', 'candesartan', 'valsartan', 'irbesartan', 'olmesartan', 'telmisartan', 'eprosartan', 'azilsartan'],
+            'beta_blocker_hf': ['bisoprolol', 'carvedilol', 'nebivolol', 'metoprolol']
+        };
+
+        // QOF Indicator Database
+        const QOF_DATA = {
+            conditions: [
+                { id: 'af', name: 'Atrial Fibrillation', code: 'AF', aliases: ['afib', 'a fib', 'irregular heartbeat', 'arrhythmia'] },
+                { id: 'chd', name: 'Ischaemic Heart Disease', code: 'CHD', isCVD: true, aliases: ['coronary heart disease', 'coronary', 'ihd', 'angina', 'heart attack', 'mi', 'myocardial infarction', 'cad', 'coronary artery disease'] },
+                { id: 'hf', name: 'Heart Failure', code: 'HF', isCVD: true, aliases: ['chf', 'congestive heart failure', 'cardiac failure', 'lvf', 'left ventricular failure', 'hfpef', 'hfref', 'heart failure with preserved ejection fraction', 'heart failure with reduced ejection fraction'] },
+                { id: 'hyp', name: 'Hypertension', code: 'HYP', aliases: ['high blood pressure', 'htn', 'bp', 'raised blood pressure', 'elevated blood pressure'] },
+                { id: 'stia', name: 'Stroke / TIA', code: 'STIA', isCVD: true, aliases: ['cva', 'cerebrovascular accident', 'transient ischaemic attack', 'mini stroke', 'brain attack'] },
+                { id: 'pad', name: 'Peripheral Arterial Disease', code: 'PAD', isCVD: true, aliases: ['pvd', 'peripheral vascular disease', 'claudication', 'intermittent claudication'] },
+                { id: 'ckd', name: 'Chronic Kidney Disease', code: 'CKD', aliases: ['renal failure', 'kidney failure', 'chronic renal failure', 'crf', 'renal impairment', 'kidney disease'] },
+                { id: 'dm', name: 'Diabetes Mellitus', code: 'DM', aliases: ['diabetes', 'type 1', 'type 2', 't1dm', 't2dm', 'sugar', 'diabetic'] },
+                { id: 'ast', name: 'Asthma', code: 'AST', aliases: ['reactive airway', 'bronchial asthma', 'wheezy'] },
+                { id: 'copd', name: 'COPD', code: 'COPD', aliases: ['chronic obstructive pulmonary disease', 'emphysema', 'chronic bronchitis', 'coad', 'chronic obstructive airways disease'] },
+                { id: 'dem', name: 'Dementia', code: 'DEM', aliases: ['alzheimers', 'alzheimer', 'memory loss', 'cognitive impairment', 'vascular dementia', 'senile'] },
+                { id: 'mh', name: 'Mental Health (SMI)', code: 'MH', aliases: ['schizophrenia', 'bipolar', 'psychosis', 'severe mental illness', 'smi', 'psychiatric'] },
+                { id: 'ndh', name: 'Non-diabetic Hyperglycaemia', code: 'NDH', aliases: ['prediabetes', 'pre-diabetes', 'impaired glucose tolerance', 'igt', 'impaired fasting glucose', 'ifg', 'borderline diabetes'] }
+            ],
+            
+            indicators: {
+                clinical: [
+                    // Atrial Fibrillation
+                    { id: 'AF006', category: 'Atrial Fibrillation', categoryCode: 'AF', action: 'CHA₂DS₂-VASc score (annual)', description: 'Stroke risk assessed using CHA₂DS₂-VASc score in the preceding 12 months (excluding those with previous score ≥2)', points: 12, thresholds: '40-90%', timeframe: '12 months', conditions: ['af'], target: 'Annual CHA₂DS₂-VASc assessment' },
+                    { id: 'AF008', category: 'Atrial Fibrillation', categoryCode: 'AF', action: 'Anticoagulation review', description: 'Patients with CHA₂DS₂-VASc score ≥2 prescribed a DOAC, or where DOAC declined/unsuitable, a Vitamin K antagonist', points: 12, thresholds: '70-95%', timeframe: 'Current', conditions: ['af'], target: 'Anticoagulation therapy', medRequired: ['doac', 'vka'], medType: 'any' },
+                    
+                    // CHD
+                    { id: 'CHD005', category: 'Ischaemic Heart Disease', categoryCode: 'CHD', action: 'Antiplatelet/anticoagulant check', description: 'Record in preceding 12 months that aspirin, alternative anti-platelet, or anticoagulant is being taken', points: 7, thresholds: '56-96%', timeframe: '12 months', conditions: ['chd'], target: 'Anti-platelet/anticoagulant therapy', medRequired: ['antiplatelet', 'anticoagulant'], medType: 'any' },
+                    { id: 'CHD015', category: 'Ischaemic Heart Disease', categoryCode: 'CHD', action: 'BP ≤140/90 (annual)', description: 'Patients aged ≤79 with last BP reading ≤140/90 mmHg (or HBPM ≤135/85) in preceding 12 months', points: 33, thresholds: '40-90%', timeframe: '12 months', conditions: ['chd'], ageMax: 79, target: 'BP ≤140/90 (clinic) or ≤135/85 (HBPM)' },
+                    { id: 'CHD016', category: 'Ischaemic Heart Disease', categoryCode: 'CHD', action: 'BP ≤150/90 (annual, age ≥80)', description: 'Patients aged ≥80 with last BP reading ≤150/90 mmHg (or HBPM ≤145/85) in preceding 12 months', points: 14, thresholds: '46-90%', timeframe: '12 months', conditions: ['chd'], ageMin: 80, target: 'BP ≤150/90 (clinic) or ≤145/85 (HBPM)' },
+                    
+                    // Cholesterol
+                    { id: 'CHOL003', category: 'Cholesterol & Lipid Management', categoryCode: 'CHOL', action: 'Statin/lipid therapy check', description: 'Patients on CHD, PAD, Stroke/TIA or CKD register currently prescribed a statin, or where declined/unsuitable, another lipid-lowering therapy', points: 38, thresholds: '70-95%', timeframe: 'Current', conditions: ['chd', 'pad', 'stia', 'ckd'], target: 'Statin or lipid-lowering therapy', medRequired: ['lipid_lowering'], medType: 'any' },
+                    { id: 'CHOL004', category: 'Cholesterol & Lipid Management', categoryCode: 'CHOL', action: 'Cholesterol target (annual)', description: 'Patients on CHD, PAD or Stroke/TIA register with cholesterol ≤2.0 mmol/L (LDL) or ≤2.6 mmol/L (non-HDL) in preceding 12 months', points: 44, thresholds: '20-50%', timeframe: '12 months', conditions: ['chd', 'pad', 'stia'], target: 'LDL ≤2.0 or non-HDL ≤2.6 mmol/L' },
+                    
+                    // Heart Failure
+                    { id: 'HF008', category: 'Heart Failure', categoryCode: 'HF', action: 'Echo/specialist confirmation (new dx)', description: 'New diagnosis (on/after 1 Apr 2023) confirmed by echocardiogram or specialist assessment within 6 months', points: 6, thresholds: '50-90%', timeframe: '6 months of diagnosis', conditions: ['hf'], target: 'Echo or specialist assessment' },
+                    { id: 'HF003', category: 'Heart Failure', categoryCode: 'HF', action: 'ACE-I/ARB review (if HFrEF)', description: 'Patients with HF due to LVSD/reduced ejection fraction currently treated with ACE-I or ARB', points: 6, thresholds: '60-92%', timeframe: 'Current', conditions: ['hf'], target: 'ACE-I or ARB therapy', medRequired: ['ace_or_arb'], medType: 'any', historyRequired: 'LVSD/reduced ejection fraction', historyNote: 'Only applies to HF with reduced ejection fraction (HFrEF), not HF with preserved ejection fraction (HFpEF)' },
+                    { id: 'HF006', category: 'Heart Failure', categoryCode: 'HF', action: 'Beta-blocker review (if HFrEF)', description: 'Patients with HF due to LVSD/reduced ejection fraction currently treated with beta-blocker licensed for HF', points: 6, thresholds: '60-92%', timeframe: 'Current', conditions: ['hf'], target: 'Beta-blocker therapy', medRequired: ['beta_blocker_hf'], medType: 'any', historyRequired: 'LVSD/reduced ejection fraction', historyNote: 'Only applies to HF with reduced ejection fraction (HFrEF), not HF with preserved ejection fraction (HFpEF)' },
+                    { id: 'HF007', category: 'Heart Failure', categoryCode: 'HF', action: 'HF review (annual)', description: 'Review in preceding 12 months including functional capacity assessment and medication review at maximal tolerated doses', points: 7, thresholds: '50-90%', timeframe: '12 months', conditions: ['hf'], target: 'Annual review with medication optimisation' },
+                    
+                    // Hypertension
+                    { id: 'HYP008', category: 'Hypertension', categoryCode: 'HYP', action: 'BP ≤140/90 (annual)', description: 'Patients aged ≤79 with last BP reading ≤140/90 mmHg (or HBPM ≤135/85) in preceding 12 months', points: 38, thresholds: '40-85%', timeframe: '12 months', conditions: ['hyp'], ageMax: 79, target: 'BP ≤140/90 (clinic) or ≤135/85 (HBPM)' },
+                    { id: 'HYP009', category: 'Hypertension', categoryCode: 'HYP', action: 'BP ≤150/90 (annual, age ≥80)', description: 'Patients aged ≥80 with last BP reading ≤150/90 mmHg (or HBPM ≤145/85) in preceding 12 months', points: 14, thresholds: '40-85%', timeframe: '12 months', conditions: ['hyp'], ageMin: 80, target: 'BP ≤150/90 (clinic) or ≤145/85 (HBPM)' },
+                    
+                    // Stroke/TIA
+                    { id: 'STIA007', category: 'Stroke & TIA', categoryCode: 'STIA', action: 'Antiplatelet/anticoagulant check', description: 'Patients with non-haemorrhagic stroke or history of TIA with record of anti-platelet or anticoagulant being taken in preceding 12 months', points: 4, thresholds: '57-97%', timeframe: '12 months', conditions: ['stia'], target: 'Anti-platelet/anticoagulant therapy', medRequired: ['antiplatelet', 'anticoagulant'], medType: 'any', historyRequired: 'non-haemorrhagic stroke', historyNote: 'Excludes patients with haemorrhagic stroke - only applies to ischaemic stroke or TIA' },
+                    { id: 'STIA014', category: 'Stroke & TIA', categoryCode: 'STIA', action: 'BP ≤140/90 (annual)', description: 'Patients aged ≤79 with history of stroke or TIA, last BP reading ≤140/90 mmHg (or HBPM ≤135/85) in preceding 12 months', points: 8, thresholds: '40-90%', timeframe: '12 months', conditions: ['stia'], ageMax: 79, target: 'BP ≤140/90 (clinic) or ≤135/85 (HBPM)' },
+                    { id: 'STIA015', category: 'Stroke & TIA', categoryCode: 'STIA', action: 'BP ≤150/90 (annual, age ≥80)', description: 'Patients aged ≥80 with history of stroke or TIA, last BP reading ≤150/90 mmHg (or HBPM ≤145/85) in preceding 12 months', points: 6, thresholds: '46-90%', timeframe: '12 months', conditions: ['stia'], ageMin: 80, target: 'BP ≤150/90 (clinic) or ≤145/85 (HBPM)' },
+                    
+                    // Diabetes - General
+                    { id: 'DM006', category: 'Diabetes Mellitus', categoryCode: 'DM', action: 'ACE-I/ARB review (if nephropathy)', description: 'Patients with nephropathy (clinical proteinuria) or microalbuminuria currently treated with ACE-I or ARB', points: 3, thresholds: '57-97%', timeframe: 'Current', conditions: ['dm'], target: 'ACE-I or ARB for nephropathy', medRequired: ['ace_or_arb'], medType: 'any', historyRequired: 'nephropathy/microalbuminuria', historyNote: 'Only applies to diabetic patients with nephropathy or microalbuminuria - check urine ACR' },
+                    { id: 'DM012', category: 'Diabetes Mellitus', categoryCode: 'DM', action: 'Foot examination (annual)', description: 'Foot examination and risk classification (low/increased/high risk/ulcerated) in preceding 12 months', points: 4, thresholds: '50-90%', timeframe: '12 months', conditions: ['dm'], target: 'Annual foot examination & risk classification' },
+                    { id: 'DM014', category: 'Diabetes Mellitus', categoryCode: 'DM', action: 'Diabetes education referral (new dx)', description: 'Newly diagnosed patients referred to structured education programme within 9 months of diagnosis', points: 11, thresholds: '40-90%', timeframe: '9 months of diagnosis', conditions: ['dm'], target: 'Structured education referral' },
+                    { id: 'DM036', category: 'Diabetes Mellitus', categoryCode: 'DM', action: 'BP ≤140/90 (annual)', description: 'Patients aged ≤79 without moderate/severe frailty with last BP ≤140/90 mmHg (or HBPM equivalent) in preceding 12 months', points: 27, thresholds: '38-90%', timeframe: '12 months', conditions: ['dm'], ageMax: 79, frailtyExclude: ['frail'], frailtyDependent: true, target: 'BP ≤140/90 (clinic)' },
+                    { id: 'DM020', category: 'Diabetes Mellitus', categoryCode: 'DM', action: 'HbA1c ≤58 (annual)', description: 'Patients without moderate/severe frailty with last HbA1c ≤58 mmol/mol in preceding 12 months', points: 17, thresholds: '35-75%', timeframe: '12 months', conditions: ['dm'], frailtyExclude: ['frail'], frailtyDependent: true, target: 'HbA1c ≤58 mmol/mol' },
+                    { id: 'DM021', category: 'Diabetes Mellitus', categoryCode: 'DM', action: 'HbA1c ≤75 (annual, if frail)', description: 'Patients WITH moderate/severe frailty with last HbA1c ≤75 mmol/mol in preceding 12 months', points: 10, thresholds: '52-92%', timeframe: '12 months', conditions: ['dm'], frailtyRequire: ['frail'], frailtyDependent: true, target: 'HbA1c ≤75 mmol/mol (frail patients)' },
+                    
+                    // Diabetes - CVD history dependent (show both with highlighting)
+                    { id: 'DM034', category: 'Diabetes Mellitus', categoryCode: 'DM', action: 'Statin review (primary prevention)', description: 'Patients aged ≥40 with NO history of CVD, without moderate/severe frailty, currently treated with statin (excluding Type 2 with CVD risk <10% in preceding 3 years)', points: 4, thresholds: '50-90%', timeframe: 'Current', conditions: ['dm'], ageMin: 40, frailtyExclude: ['frail'], frailtyDependent: true, cvdHistoryRequired: false, cvdHistoryDependent: true, target: 'Statin for primary prevention', medRequired: ['statin'], medType: 'any', historyNote: 'Primary prevention - only for patients WITHOUT history of CVD (CHD, stroke, TIA, PAD)' },
+                    { id: 'DM035', category: 'Diabetes Mellitus', categoryCode: 'DM', action: 'Statin review (secondary prevention)', description: 'Patients WITH history of CVD (excluding haemorrhagic stroke) currently treated with statin or alternative lipid-lowering therapy', points: 2, thresholds: '50-90%', timeframe: 'Current', conditions: ['dm'], cvdHistoryRequired: true, cvdHistoryDependent: true, target: 'Statin for secondary prevention', medRequired: ['lipid_lowering'], medType: 'any', historyNote: 'Secondary prevention - only for patients WITH history of CVD (CHD, stroke, TIA, PAD, HF)' },
+                    
+                    // Asthma
+                    { id: 'AST012', category: 'Asthma', categoryCode: 'AST', action: 'Objective test (new dx)', description: 'New diagnosis (on/after 1 Apr 2025) with record of objective test 3 months before or after diagnosis', points: 15, thresholds: '45-80%', timeframe: '3 months of diagnosis', conditions: ['ast'], target: 'Objective test at diagnosis' },
+                    { id: 'AST007', category: 'Asthma', categoryCode: 'AST', action: 'Asthma review (annual)', description: 'Asthma review in preceding 12 months: asthma control assessment, exacerbation count, inhaler technique, written personalised action plan', points: 20, thresholds: '45-70%', timeframe: '12 months', conditions: ['ast'], target: 'Annual asthma review (4 components)' },
+                    
+                    // COPD
+                    { id: 'COPD010', category: 'COPD', categoryCode: 'COPD', action: 'COPD review (annual)', description: 'Review in preceding 12 months including exacerbation count and MRC dyspnoea scale assessment', points: 9, thresholds: '50-90%', timeframe: '12 months', conditions: ['copd'], target: 'Annual COPD review with MRC score' },
+                    
+                    // Dementia
+                    { id: 'DEM004', category: 'Dementia', categoryCode: 'DEM', action: 'Care plan review (annual)', description: 'Care plan reviewed in preceding 12 months', points: 14, thresholds: '35-70%', timeframe: '12 months', conditions: ['dem'], target: 'Annual care plan review' },
+                    
+                    // Mental Health
+                    { id: 'MH002', category: 'Mental Health', categoryCode: 'MH', action: 'Care plan review (annual)', description: 'Comprehensive care plan documented in preceding 12 months, agreed with patient/family/carers', points: 5, thresholds: '40-90%', timeframe: '12 months', conditions: ['mh'], target: 'Annual comprehensive care plan' },
+                    { id: 'MH003', category: 'Mental Health', categoryCode: 'MH', action: 'BP check (annual)', description: 'Blood pressure recorded in preceding 12 months', points: 3, thresholds: '50-90%', timeframe: '12 months', conditions: ['mh'], target: 'Annual BP check' },
+                    { id: 'MH006', category: 'Mental Health', categoryCode: 'MH', action: 'BMI check (annual)', description: 'BMI recorded in preceding 12 months', points: 3, thresholds: '50-90%', timeframe: '12 months', conditions: ['mh'], target: 'Annual BMI check' },
+                    { id: 'MH007', category: 'Mental Health', categoryCode: 'MH', action: 'Alcohol screen (annual)', description: 'Alcohol consumption recorded in preceding 12 months', points: 3, thresholds: '50-90%', timeframe: '12 months', conditions: ['mh'], target: 'Annual alcohol assessment' },
+                    { id: 'MH011', category: 'Mental Health', categoryCode: 'MH', action: 'Lipids check (annual/biennial)', description: 'Lipid profile in preceding 12 months (if on antipsychotics/CVD/smoker/overweight) or 24 months for others', points: 7, thresholds: '50-90%', timeframe: '12-24 months', conditions: ['mh'], target: 'Lipid profile (annual if high risk)' },
+                    { id: 'MH012', category: 'Mental Health', categoryCode: 'MH', action: 'Glucose/HbA1c (annual)', description: 'Blood glucose or HbA1c recorded in preceding 12 months', points: 7, thresholds: '50-90%', timeframe: '12 months', conditions: ['mh'], target: 'Annual glucose/HbA1c check' },
+                    
+                    // NDH
+                    { id: 'NDH002', category: 'Non-diabetic Hyperglycaemia', categoryCode: 'NDH', action: 'HbA1c/glucose (annual)', description: 'HbA1c or fasting blood glucose performed in preceding 12 months', points: 18, thresholds: '50-90%', timeframe: '12 months', conditions: ['ndh'], target: 'Annual HbA1c or fasting glucose' }
+                ],
+                
+                publicHealth: [
+                    { id: 'BP002', category: 'Blood Pressure', categoryCode: 'BP', action: 'BP check (5-yearly)', description: 'Patients aged ≥45 with blood pressure recorded in preceding 5 years', points: 15, thresholds: '50-90%', timeframe: '5 years', conditions: [], ageMin: 45, target: 'BP check every 5 years' },
+                    { id: 'SMOK002', category: 'Smoking', categoryCode: 'SMOK', action: 'Smoking status (annual)', description: 'Patients with CHD, PAD, stroke/TIA, hypertension, diabetes, COPD, CKD, asthma, or SMI with smoking status recorded in preceding 12 months', points: 25, thresholds: '50-90%', timeframe: '12 months', conditions: ['chd', 'pad', 'stia', 'hyp', 'dm', 'copd', 'ckd', 'ast', 'mh'], target: 'Annual smoking status update' },
+                    { id: 'SMOK004', category: 'Smoking', categoryCode: 'SMOK', action: 'Smoking cessation offer (biennial)', description: 'Current smokers aged ≥15 with offer of support and treatment recorded in preceding 24 months', points: 12, thresholds: '40-90%', timeframe: '24 months', conditions: [], requiresSmoker: true, ageMin: 15, target: 'Smoking cessation support offer' },
+                    { id: 'VI001', category: 'Vaccinations', categoryCode: 'VI', action: 'DTaP ×3 (by 8 months)', description: 'Babies reaching 8 months with ≥3 doses DTaP vaccine before 8 months', points: 18, thresholds: '89-96%', timeframe: 'By 8 months', conditions: [], ageMax: 0, target: '3× DTaP by 8 months' },
+                    { id: 'VI002', category: 'Vaccinations', categoryCode: 'VI', action: 'MMR (12-18 months)', description: 'Children reaching 18 months with ≥1 dose MMR between 12-18 months', points: 18, thresholds: '86-96%', timeframe: '12-18 months', conditions: [], ageMin: 1, ageMax: 1, target: 'MMR 12-18 months' },
+                    { id: 'VI003', category: 'Vaccinations', categoryCode: 'VI', action: 'Pre-school boosters (1-5 years)', description: 'Children reaching 5 years with DTaP/IPV booster and ≥2 doses MMR between ages 1-5', points: 18, thresholds: '81-96%', timeframe: '1-5 years', conditions: [], ageMin: 1, ageMax: 5, target: 'Pre-school boosters' },
+                    { id: 'VI004', category: 'Vaccinations', categoryCode: 'VI', action: 'Shingles vaccine (70-79 years)', description: 'Patients reaching 80 with shingles vaccine received between ages 70-79', points: 10, thresholds: '50-60%', timeframe: '70-79 years', conditions: [], ageMin: 70, ageMax: 80, target: 'Shingles vaccine 70-79' },
+                    { id: 'CS005', category: 'Cervical Screening', categoryCode: 'CS', action: 'Cervical screen (3-yearly, 25-49)', description: 'Women aged 25-49 with adequate cervical screen in previous 3 years 6 months', points: 7, thresholds: '45-80%', timeframe: '3.5 years', conditions: [], sexRequired: 'female', ageMin: 25, ageMax: 49, target: 'Cervical screen every 3 years' },
+                    { id: 'CS006', category: 'Cervical Screening', categoryCode: 'CS', action: 'Cervical screen (5-yearly, 50-64)', description: 'Women aged 50-64 with adequate cervical screen in previous 5 years 6 months', points: 4, thresholds: '45-80%', timeframe: '5.5 years', conditions: [], sexRequired: 'female', ageMin: 50, ageMax: 64, target: 'Cervical screen every 5 years' }
+                ]
+            }
+        };
+
+        // State
+        let state = {
+            ageRange: '45-49',
+            ageMin: 45,
+            ageMax: 49,
+            sex: 'male',
+            frailty: 'unknown',
+            smokingStatus: 'unknown',
+            conditions: [],
+            medications: '',
+            selectedIndicators: []
+        };
+
+        // Parse age range string into min/max values
+        function parseAgeRange(rangeStr) {
+            if (rangeStr === '80+') {
+                return { min: 80, max: 120 };
+            }
+            const [min, max] = rangeStr.split('-').map(Number);
+            return { min, max };
+        }
+
+        // Check if patient has CVD history
+        function hasCVDHistory() {
+            return state.conditions.some(c => CVD_CONDITIONS.includes(c));
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setupEventListeners();
+            updateSelectedConditions(); // Show smoking prompt on load if age 15+
+        });
+
+        function setupEventListeners() {
+            document.getElementById('patientAge').addEventListener('change', (e) => {
+                state.ageRange = e.target.value;
+                const { min, max } = parseAgeRange(e.target.value);
+                state.ageMin = min;
+                state.ageMax = max;
+                updateSelectedConditions(); // Update prompts based on new age
+            });
+
+            // Sex toggle buttons
+            document.querySelectorAll('.sex-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.sex-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    state.sex = btn.dataset.value;
+                });
+            });
+
+            const searchInput = document.getElementById('conditionSearch');
+            const dropdown = document.getElementById('conditionDropdown');
+
+            searchInput.addEventListener('focus', () => {
+                updateDropdown(searchInput.value);
+                dropdown.classList.add('open');
+            });
+
+            searchInput.addEventListener('input', (e) => {
+                updateDropdown(e.target.value);
+                dropdown.classList.add('open');
+            });
+
+            searchInput.addEventListener('blur', () => {
+                setTimeout(() => dropdown.classList.remove('open'), 200);
+            });
+
+            dropdown.addEventListener('click', (e) => {
+                const item = e.target.closest('.dropdown-item');
+                if (item) {
+                    const conditionId = item.dataset.id;
+                    if (!state.conditions.includes(conditionId)) {
+                        state.conditions.push(conditionId);
+                        updateSelectedConditions();
+                    }
+                    searchInput.value = '';
+                    updateDropdown('');
+                }
+            });
+
+            document.getElementById('medicationsInput').addEventListener('input', (e) => {
+                state.medications = e.target.value;
+            });
+
+            // Prompt button event listeners (smoking and frailty)
+            document.querySelectorAll('.prompt-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const type = btn.dataset.type;
+                    const value = btn.dataset.value;
+                    const isCurrentlyActive = btn.classList.contains('active');
+                    
+                    // Update buttons in same group
+                    const parent = btn.closest('.conditional-prompt');
+                    parent.querySelectorAll('.prompt-btn').forEach(b => b.classList.remove('active'));
+                    
+                    // Toggle: if clicking active button, unselect it (set to unknown)
+                    // Otherwise, select the clicked button
+                    if (isCurrentlyActive) {
+                        // Unselect - set to unknown
+                        if (type === 'smoking') {
+                            state.smokingStatus = 'unknown';
+                        } else if (type === 'frailty') {
+                            state.frailty = 'unknown';
+                        }
+                    } else {
+                        // Select this button
+                        btn.classList.add('active');
+                        if (type === 'smoking') {
+                            state.smokingStatus = value;
+                        } else if (type === 'frailty') {
+                            state.frailty = value;
+                        }
+                    }
+                });
+            });
+
+            document.getElementById('findIndicatorsBtn').addEventListener('click', showResults);
+            document.getElementById('backBtn').addEventListener('click', showSearch);
+
+            // Tab switching
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById(btn.dataset.tab + 'Tab').classList.add('active');
+                });
+            });
+        }
+
+        function updateDropdown(query) {
+            const dropdown = document.getElementById('conditionDropdown');
+            const queryLower = query.toLowerCase();
+            const filtered = QOF_DATA.conditions.filter(c => {
+                const matchesName = c.name.toLowerCase().includes(queryLower);
+                const matchesCode = c.code.toLowerCase().includes(queryLower);
+                const matchesAlias = c.aliases && c.aliases.some(alias => alias.toLowerCase().includes(queryLower));
+                const matchesQuery = query === '' || matchesName || matchesCode || matchesAlias;
+                const notSelected = !state.conditions.includes(c.id);
+                return matchesQuery && notSelected;
+            });
+
+            if (filtered.length === 0) {
+                dropdown.innerHTML = '<div class="dropdown-empty">No matching conditions</div>';
+            } else {
+                dropdown.innerHTML = filtered.map(c => `
+                    <div class="dropdown-item" data-id="${c.id}">
+                        <span class="name">${c.name}</span>
+                        <span class="code">${c.code}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function updateSelectedConditions() {
+            const container = document.getElementById('selectedConditions');
+            const smokingPrompt = document.getElementById('smokingPrompt');
+            const frailtyPrompt = document.getElementById('frailtyPrompt');
+            const medicationsGroup = document.getElementById('medicationsGroup');
+            
+            // Determine which prompts to show
+            const hasDiabetes = state.conditions.includes('dm');
+            const isAge15Plus = state.ageMin >= 15;
+            
+            // Conditions that have medication-related indicators
+            const medicationConditions = ['chd', 'af', 'stia', 'hf', 'dm'];
+            const hasMedicationCondition = state.conditions.some(c => medicationConditions.includes(c));
+            
+            // Show smoking prompt for anyone aged 15+ (SMOK004 applies to all smokers 15+)
+            smokingPrompt.style.display = isAge15Plus ? 'block' : 'none';
+            
+            // Show frailty prompt only for diabetes
+            frailtyPrompt.style.display = hasDiabetes ? 'block' : 'none';
+            
+            // Show medications only when relevant conditions are selected
+            medicationsGroup.style.display = hasMedicationCondition ? 'block' : 'none';
+            
+            // Reset frailty to 'unknown' if diabetes is removed
+            if (!hasDiabetes && state.frailty !== 'unknown') {
+                state.frailty = 'unknown';
+                document.querySelectorAll('#frailtyPrompt .prompt-btn').forEach(b => {
+                    b.classList.remove('active');
+                });
+            }
+            
+            // Reset smoking if under 15
+            if (!isAge15Plus && state.smokingStatus !== 'unknown') {
+                state.smokingStatus = 'unknown';
+                document.querySelectorAll('#smokingPrompt .prompt-btn').forEach(b => {
+                    b.classList.remove('active');
+                });
+            }
+            
+            if (state.conditions.length === 0) {
+                container.innerHTML = '<span class="no-conditions">No conditions selected</span>';
+                return;
+            }
+
+            container.innerHTML = state.conditions.map(id => {
+                const condition = QOF_DATA.conditions.find(c => c.id === id);
+                return `
+                    <span class="condition-tag">
+                        ${condition.name}
+                        <span class="remove" data-id="${id}">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 6L6 18M6 6l12 12"/>
+                            </svg>
+                        </span>
+                    </span>
+                `;
+            }).join('');
+
+            container.querySelectorAll('.remove').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = btn.dataset.id;
+                    state.conditions = state.conditions.filter(c => c !== id);
+                    updateSelectedConditions();
+                });
+            });
+        }
+
+        function checkMedicationRequirement(medRequired, medType) {
+            if (!medRequired || !state.medications) return null;
+            
+            const medsLower = state.medications.toLowerCase();
+            
+            if (medType === 'any') {
+                for (const category of medRequired) {
+                    const meds = MEDICATION_MAPPINGS[category] || [];
+                    for (const med of meds) {
+                        if (medsLower.includes(med)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+            
+            return null;
+        }
+
+        function showSearch() {
+            document.getElementById('searchView').classList.add('active');
+            document.getElementById('resultsView').classList.remove('active');
+            // Clear selected indicators when going back (new patient context)
+            state.selectedIndicators = [];
+        }
+
+        // Check if medication text suggests dose needs review
+        function needsDoseReview(medsText) {
+            const reviewPhrases = [
+                'maximum tolerated',
+                'max tolerated',
+                'titrated down',
+                'titrating',
+                'reduced dose',
+                'dose reduced',
+                'low dose',
+                'half dose',
+                'intolerant',
+                'intolerance',
+                'side effect',
+                'adverse',
+                'not tolerated',
+                'poorly tolerated',
+                'as tolerated',
+                'titrate',
+                'uptitrate',
+                'down-titrated',
+                'sub-optimal',
+                'suboptimal'
+            ];
+            const medsLower = medsText.toLowerCase();
+            return reviewPhrases.some(phrase => medsLower.includes(phrase));
+        }
+
+        // Auto-tick indicators where patient is already on required medication
+        function autoTickMedicationIndicators() {
+            if (!state.medications) return;
+            
+            const medsLower = state.medications.toLowerCase();
+            const doseNeedsReview = needsDoseReview(state.medications);
+            
+            // If dose needs review, don't auto-tick anything
+            if (doseNeedsReview) return;
+            
+            // Get all applicable indicators
+            const allIndicators = [
+                ...filterIndicators(QOF_DATA.indicators.clinical),
+                ...filterIndicators(QOF_DATA.indicators.publicHealth)
+            ];
+            
+            allIndicators.forEach(ind => {
+                if (ind.medRequired && !state.selectedIndicators.includes(ind.id)) {
+                    // Check if patient is on the required medication
+                    const isOnMed = checkMedicationRequirement(ind.medRequired, ind.medType);
+                    if (isOnMed === true) {
+                        state.selectedIndicators.push(ind.id);
+                    }
+                }
+            });
+        }
+
+        function showResults() {
+            document.getElementById('searchView').classList.remove('active');
+            document.getElementById('resultsView').classList.add('active');
+            // Reset to All Indicators tab
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector('.tab-btn[data-tab="all"]').classList.add('active');
+            document.getElementById('allTab').classList.add('active');
+            
+            // Auto-tick medication indicators
+            autoTickMedicationIndicators();
+            
+            updatePatientSummary();
+            updateResults();
+            updateTabCounts();
+            updateConsultationView();
+        }
+
+        function updatePatientSummary() {
+            const container = document.getElementById('patientSummary');
+            const conditionNames = state.conditions.map(id => {
+                const c = QOF_DATA.conditions.find(cond => cond.id === id);
+                return c ? c.name : id;
+            });
+            
+            const hasCVD = hasCVDHistory();
+            const hasDiabetes = state.conditions.includes('dm');
+            const isAge15Plus = state.ageMin >= 15;
+            
+            // Format age range for display
+            const ageDisplay = state.ageRange === '80+' ? '80+ years' : `${state.ageRange} years`;
+            
+            // Smoking display
+            const smokingDisplay = state.smokingStatus === 'yes' ? 'Smoker' : 
+                                   state.smokingStatus === 'unknown' ? 'Smoking ?' : 'Non-smoker';
+            const smokingClass = state.smokingStatus === 'yes' ? 'status-red' : 
+                                 state.smokingStatus === 'unknown' ? 'status-amber' : 'status-green';
+            
+            // Frailty display
+            const frailtyDisplay = state.frailty === 'frail' ? 'Frail' : 
+                                   state.frailty === 'unknown' ? 'Frailty ?' : 'Not Frail';
+            const frailtyClass = state.frailty === 'frail' ? 'status-amber' : 
+                                 state.frailty === 'unknown' ? 'status-amber' : 'status-green';
+
+            container.innerHTML = `
+                <span class="patient-summary-label">Patient:</span>
+                <span class="patient-summary-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    ${ageDisplay}
+                </span>
+                <span class="patient-summary-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    ${state.sex.charAt(0).toUpperCase() + state.sex.slice(1)}
+                </span>
+                ${isAge15Plus ? `
+                <span class="patient-summary-item status-toggle ${smokingClass}" id="smokingToggle" title="Click to change smoking status">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 12H2v4h16v-4z"/><path d="M22 12v4"/><path d="M7 12V7c0-1.1.9-2 2-2h1a2 2 0 0 1 2 2v0a2 2 0 0 0 2 2h0a2 2 0 0 1 2 2v1"/></svg>
+                    ${smokingDisplay}
+                    <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </span>
+                ` : ''}
+                ${hasDiabetes ? `
+                <span class="patient-summary-item status-toggle ${frailtyClass}" id="frailtyToggle" title="Click to change frailty status">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                    ${frailtyDisplay}
+                    <svg class="edit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </span>
+                ` : ''}
+                ${hasCVD ? `
+                <span class="patient-summary-item cvd">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    CVD History
+                </span>
+                ` : ''}
+                ${conditionNames.length > 0 ? `
+                <span class="patient-summary-divider"></span>
+                <span class="patient-summary-label">Conditions:</span>
+                ${conditionNames.map(name => `<span class="patient-summary-item">${name}</span>`).join('')}
+                ` : ''}
+            `;
+            
+            // Add smoking toggle event listener
+            const smokingToggle = document.getElementById('smokingToggle');
+            if (smokingToggle) {
+                smokingToggle.addEventListener('click', () => {
+                    // Cycle through: unknown -> no -> yes -> unknown
+                    if (state.smokingStatus === 'unknown') state.smokingStatus = 'no';
+                    else if (state.smokingStatus === 'no') state.smokingStatus = 'yes';
+                    else state.smokingStatus = 'unknown';
+                    updatePatientSummary();
+                    updateResults();
+                    updateTabCounts();
+                    updateConsultationView();
+                });
+            }
+            
+            // Add frailty toggle event listener
+            const frailtyToggle = document.getElementById('frailtyToggle');
+            if (frailtyToggle) {
+                frailtyToggle.addEventListener('click', () => {
+                    // Cycle through: unknown -> none -> frail -> unknown
+                    if (state.frailty === 'unknown') state.frailty = 'none';
+                    else if (state.frailty === 'none') state.frailty = 'frail';
+                    else state.frailty = 'unknown';
+                    updatePatientSummary();
+                    updateResults();
+                    updateTabCounts();
+                    updateConsultationView();
+                });
+            }
+        }
+
+        function filterIndicators(indicators) {
+            const patientHasCVD = hasCVDHistory();
+            const frailtyUnknown = state.frailty === 'unknown';
+            const smokingUnknown = state.smokingStatus === 'unknown';
+            const isSmoker = state.smokingStatus === 'yes';
+            
+            // Check if patient has conditions that require annual BP monitoring
+            const conditionsWithAnnualBP = ['chd', 'hyp', 'stia', 'dm', 'mh'];
+            const hasAnnualBPRequirement = state.conditions.some(c => conditionsWithAnnualBP.includes(c));
+            
+            return indicators.filter(ind => {
+                // Hide 5-yearly BP check if patient has annual BP requirement
+                if (ind.id === 'BP002' && hasAnnualBPRequirement) return false;
+                
+                // Check age constraints using ranges
+                // Include indicator if there's ANY overlap between patient age range and indicator age range
+                if (ind.ageMin !== undefined && state.ageMax < ind.ageMin) return false;
+                if (ind.ageMax !== undefined && state.ageMin > ind.ageMax) return false;
+                
+                // Check sex constraints
+                if (ind.sexRequired && state.sex !== ind.sexRequired) return false;
+                
+                // Check smoker requirement - show if smoker OR if smoking unknown
+                if (ind.requiresSmoker && !isSmoker && !smokingUnknown) return false;
+                
+                // For unknown frailty, include all frailty-dependent indicators
+                if (!frailtyUnknown) {
+                    if (ind.frailtyExclude && ind.frailtyExclude.includes(state.frailty)) return false;
+                    if (ind.frailtyRequire && !ind.frailtyRequire.includes(state.frailty)) return false;
+                }
+                
+                // For CVD history dependent indicators (like DM034/DM035)
+                // Only show the appropriate one based on patient's CVD status
+                if (ind.cvdHistoryDependent) {
+                    // Only show these for DM patients
+                    if (!state.conditions.includes('dm')) return false;
+                    
+                    // Check if patient has CVD history
+                    const patientHasCVD = hasCVDHistory();
+                    
+                    // DM034 (primary prevention) - only show if NO CVD history
+                    if (ind.cvdHistoryRequired === false && patientHasCVD) return false;
+                    
+                    // DM035 (secondary prevention) - only show if HAS CVD history
+                    if (ind.cvdHistoryRequired === true && !patientHasCVD) return false;
+                    
+                    return true;
+                }
+                
+                // Check condition requirements
+                if (ind.conditions.length === 0) {
+                    return true;
+                }
+                
+                return ind.conditions.some(c => state.conditions.includes(c));
+            });
+        }
+
+        function groupByCategory(indicators) {
+            const groups = {};
+            indicators.forEach(ind => {
+                if (!groups[ind.category]) {
+                    groups[ind.category] = { name: ind.category, code: ind.categoryCode, indicators: [] };
+                }
+                groups[ind.category].indicators.push(ind);
+            });
+            return Object.values(groups);
+        }
+
+        // Derive action type from indicator properties
+        function getActionType(ind) {
+            const action = (ind.action || '').toLowerCase();
+            const target = (ind.target || '').toLowerCase();
+            
+            // Medication checks
+            if (ind.medRequired || action.includes('statin') || action.includes('antiplatelet') || 
+                action.includes('anticoagul') || action.includes('ace-i') || action.includes('arb') ||
+                action.includes('beta-blocker') || action.includes('lipid therapy')) {
+                return 'medication';
+            }
+            
+            // Blood pressure
+            if (action.includes('bp ') || action.includes('blood pressure')) {
+                return 'bp';
+            }
+            
+            // Blood tests
+            if (action.includes('hba1c') || action.includes('glucose') || action.includes('lipid') ||
+                action.includes('cholesterol') || target.includes('hba1c') || target.includes('ldl')) {
+                return 'bloods';
+            }
+            
+            // Reviews
+            if (action.includes('review') || action.includes('care plan')) {
+                return 'review';
+            }
+            
+            // Examinations
+            if (action.includes('foot exam') || action.includes('pulse') || action.includes('bmi')) {
+                return 'examination';
+            }
+            
+            // Referrals
+            if (action.includes('referral') || action.includes('echo') || action.includes('specialist') || action.includes('objective test')) {
+                return 'referral';
+            }
+            
+            // Smoking & Lifestyle (combined)
+            if (action.includes('smok') || ind.categoryCode === 'SMOK' || action.includes('alcohol')) {
+                return 'lifestyle';
+            }
+            
+            // Screening/Vaccinations
+            if (ind.categoryCode === 'VI' || ind.categoryCode === 'CS') {
+                return 'screening';
+            }
+            
+            // Risk assessment
+            if (action.includes('cha') || action.includes('risk') || action.includes('score')) {
+                return 'risk';
+            }
+            
+            return 'other';
+        }
+
+        const ACTION_TYPE_CONFIG = {
+            medication: { name: 'Medication Checks', icon: '💊', order: 1 },
+            bp: { name: 'Blood Pressure', icon: '🩺', order: 2 },
+            bloods: { name: 'Blood Tests', icon: '🩸', order: 3 },
+            review: { name: 'Annual Reviews', icon: '📋', order: 4 },
+            examination: { name: 'Examinations', icon: '👁', order: 5 },
+            referral: { name: 'Referrals & Tests', icon: '📤', order: 6 },
+            lifestyle: { name: 'Smoking & Lifestyle', icon: '🚬', order: 7 },
+            screening: { name: 'Screening & Vaccinations', icon: '💉', order: 8 },
+            risk: { name: 'Risk Assessment', icon: '⚠', order: 9 },
+            other: { name: 'Other', icon: '📌', order: 10 }
+        };
+
+        function groupByActionType(indicators) {
+            const groups = {};
+            indicators.forEach(ind => {
+                const actionType = getActionType(ind);
+                if (!groups[actionType]) {
+                    groups[actionType] = { 
+                        type: actionType,
+                        name: ACTION_TYPE_CONFIG[actionType].name,
+                        icon: ACTION_TYPE_CONFIG[actionType].icon,
+                        order: ACTION_TYPE_CONFIG[actionType].order,
+                        indicators: [] 
+                    };
+                }
+                groups[actionType].indicators.push(ind);
+            });
+            return Object.values(groups).sort((a, b) => a.order - b.order);
+        }
+
+        // Combine indicators with the same action into one display item
+        function combineIndicators(indicators) {
+            const combined = {};
+            
+            // Define medication groupings - indicators checking the same meds should combine
+            const getMedicationGroupKey = (ind) => {
+                if (!ind.medRequired) return null;
+                
+                const meds = ind.medRequired.sort().join('|');
+                // Group similar medication checks together
+                if (meds.includes('antiplatelet') || meds.includes('anticoagulant')) {
+                    return 'med:antiplatelet_anticoagulant';
+                }
+                if (meds.includes('lipid_lowering') || meds.includes('statin')) {
+                    return 'med:statin_lipid';
+                }
+                if (meds.includes('ace_or_arb')) {
+                    return 'med:ace_arb';
+                }
+                if (meds.includes('beta_blocker_hf')) {
+                    return 'med:beta_blocker';
+                }
+                if (meds.includes('doac') || meds.includes('vka')) {
+                    return 'med:anticoagulant_oral';
+                }
+                return null;
+            };
+            
+            indicators.forEach(ind => {
+                // First try to group by medication type, then fall back to action
+                const medKey = getMedicationGroupKey(ind);
+                const key = medKey || ind.action || ind.target;
+                
+                if (!combined[key]) {
+                    combined[key] = {
+                        ...ind,
+                        codes: [ind.id],
+                        allPoints: [{ id: ind.id, points: ind.points, category: ind.categoryCode }],
+                        categories: [ind.categoryCode]
+                    };
+                    // If grouping by medication, use a generic action name
+                    if (medKey) {
+                        if (medKey === 'med:antiplatelet_anticoagulant') {
+                            combined[key].action = 'Antiplatelet/anticoagulant check';
+                            combined[key].target = 'Anti-platelet or anticoagulant therapy';
+                        } else if (medKey === 'med:statin_lipid') {
+                            combined[key].action = 'Statin/lipid therapy check';
+                            combined[key].target = 'Statin or lipid-lowering therapy';
+                        } else if (medKey === 'med:ace_arb') {
+                            combined[key].action = 'ACE-I/ARB check';
+                            combined[key].target = 'ACE-I or ARB therapy';
+                        }
+                    }
+                } else {
+                    // Add this indicator's code to the combined entry
+                    combined[key].codes.push(ind.id);
+                    combined[key].allPoints.push({ id: ind.id, points: ind.points, category: ind.categoryCode });
+                    if (!combined[key].categories.includes(ind.categoryCode)) {
+                        combined[key].categories.push(ind.categoryCode);
+                    }
+                    // Keep the highest points value for display
+                    if (ind.points > combined[key].points) {
+                        combined[key].points = ind.points;
+                    }
+                    // Merge any special flags
+                    if (ind.medRequired) combined[key].medRequired = ind.medRequired;
+                    if (ind.medType) combined[key].medType = ind.medType;
+                    if (ind.historyRequired) combined[key].historyRequired = combined[key].historyRequired || ind.historyRequired;
+                    if (ind.historyNote) combined[key].historyNote = combined[key].historyNote ? combined[key].historyNote + '; ' + ind.historyNote : ind.historyNote;
+                    if (ind.frailtyDependent) combined[key].frailtyDependent = ind.frailtyDependent;
+                    if (ind.cvdHistoryDependent) combined[key].cvdHistoryDependent = ind.cvdHistoryDependent;
+                }
+            });
+            
+            return Object.values(combined);
+        }
+
+        function updateResults() {
+            const panel = document.getElementById('resultsPanel');
+            const clinicalIndicators = filterIndicators(QOF_DATA.indicators.clinical);
+            const publicHealthIndicators = filterIndicators(QOF_DATA.indicators.publicHealth);
+            
+            // Combine duplicates
+            const combinedClinical = combineIndicators(clinicalIndicators);
+            const combinedPublicHealth = combineIndicators(publicHealthIndicators);
+            
+            const totalIndicators = combinedClinical.length + combinedPublicHealth.length;
+            const clinicalPoints = clinicalIndicators.reduce((sum, i) => sum + i.points, 0);
+            const publicHealthPoints = publicHealthIndicators.reduce((sum, i) => sum + i.points, 0);
+            const totalPoints = clinicalPoints + publicHealthPoints;
+            
+            const allIndicators = [...clinicalIndicators, ...publicHealthIndicators];
+            const hasMedIndicators = allIndicators.some(i => i.medRequired);
+            const hasFrailtyDependent = allIndicators.some(i => i.frailtyDependent);
+            const hasSmokingIndicators = allIndicators.some(i => i.requiresSmoker);
+            // Only show history banner if there are indicators with historyRequired flag
+            // (not cvdHistoryDependent, as those are now properly filtered)
+            const hasHistoryDependent = allIndicators.some(i => i.historyRequired);
+            const frailtyUnknown = state.frailty === 'unknown';
+            const smokingUnknown = state.smokingStatus === 'unknown';
+            
+            if (totalIndicators === 0) {
+                panel.innerHTML = `
+                    <div class="card">
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <h3>No Applicable Indicators</h3>
+                            <p>No QOF indicators match this patient profile. Try adding conditions or adjusting the patient details.</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            const clinicalGroups = groupByCategory(clinicalIndicators);
+            const publicHealthGroups = groupByCategory(publicHealthIndicators);
+
+            panel.innerHTML = `
+                <div class="results-summary-inline">
+                    <span class="summary-stat"><strong>${totalIndicators}</strong> actions</span>
+                    <span class="summary-divider">·</span>
+                    <span class="summary-stat"><strong>${totalPoints}</strong> points available</span>
+                </div>
+
+                ${(hasMedIndicators && state.medications) || (frailtyUnknown && hasFrailtyDependent) || (smokingUnknown && hasSmokingIndicators) || hasHistoryDependent ? `
+                <div class="legend">
+                    ${hasMedIndicators && state.medications ? `
+                    <div class="legend-item">
+                        <div class="legend-dot green"></div>
+                        <span>On required medication</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot red"></div>
+                        <span>Not on required medication</span>
+                    </div>
+                    ` : ''}
+                    ${(frailtyUnknown && hasFrailtyDependent) || (smokingUnknown && hasSmokingIndicators) ? `
+                    <div class="legend-item">
+                        <div class="legend-dot amber"></div>
+                        <span>Check status needed</span>
+                    </div>
+                    ` : ''}
+                    ${hasHistoryDependent ? `
+                    <div class="legend-item">
+                        <div class="legend-dot purple"></div>
+                        <span>Dependent on medical history</span>
+                    </div>
+                    ` : ''}
+                    <div class="legend-item">
+                        <div class="legend-dot neutral"></div>
+                        <span>Standard indicator</span>
+                    </div>
+                </div>
+                ` : ''}
+
+                ${renderActionTypeGroups([...combinedClinical, ...combinedPublicHealth])}
+            `;
+        }
+
+        function renderActionTypeGroups(allIndicators) {
+            const actionGroups = groupByActionType(allIndicators);
+            return actionGroups.map(group => `
+                <div class="indicator-section">
+                    <div class="section-header">
+                        <span class="section-title">${group.icon} ${group.name}</span>
+                        <span class="section-stats">${group.indicators.length} items · ${group.indicators.reduce((sum, i) => sum + (i.allPoints ? i.allPoints.reduce((s, p) => s + p.points, 0) : i.points), 0)} pts</span>
+                    </div>
+                    <div class="indicator-list">
+                        ${group.indicators.map(ind => renderIndicator(ind)).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderIndicator(ind) {
+            let medStatus = null;
+            let cardClass = '';
+            const frailtyUnknown = state.frailty === 'unknown';
+            const smokingUnknown = state.smokingStatus === 'unknown';
+            const isFrailtyDependent = ind.frailtyDependent && frailtyUnknown;
+            const isSmokingDependent = ind.requiresSmoker && smokingUnknown;
+            const patientHasCVD = hasCVDHistory();
+            
+            // Check if this is a history-dependent indicator that needs highlighting
+            const isHistoryDependent = ind.historyRequired || ind.cvdHistoryDependent;
+            let historyMatches = true;
+            
+            if (ind.cvdHistoryDependent) {
+                if (ind.cvdHistoryRequired === true && !patientHasCVD) {
+                    historyMatches = false;
+                } else if (ind.cvdHistoryRequired === false && patientHasCVD) {
+                    historyMatches = false;
+                }
+            }
+            
+            // Determine card highlighting
+            if (ind.medRequired && state.medications) {
+                medStatus = checkMedicationRequirement(ind.medRequired, ind.medType);
+                if (medStatus === true) {
+                    cardClass = 'med-met';
+                } else if (medStatus === false) {
+                    cardClass = 'med-not-met';
+                }
+            }
+            
+            // History-dependent takes precedence if doesn't match patient
+            if (isHistoryDependent && !historyMatches) {
+                cardClass = 'history-dependent';
+            }
+            
+            // Frailty-dependent highlighting
+            if (isFrailtyDependent && !cardClass) {
+                cardClass = 'frailty-dependent';
+            }
+            
+            // Smoking-dependent highlighting
+            if (isSmokingDependent && !cardClass) {
+                cardClass = 'smoking-dependent';
+            }
+
+            // Build status badge
+            let statusBadge = '';
+            if (isHistoryDependent && !historyMatches) {
+                statusBadge = `
+                    <span class="status-badge history">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                        Check history
+                    </span>
+                `;
+            } else if (isFrailtyDependent) {
+                statusBadge = `
+                    <span class="status-badge frailty">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        Check frailty
+                    </span>
+                `;
+            } else if (isSmokingDependent) {
+                statusBadge = `
+                    <span class="status-badge smoking">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        Check smoking
+                    </span>
+                `;
+            } else if (medStatus !== null) {
+                statusBadge = `
+                    <span class="status-badge ${medStatus ? 'met' : 'not-met'}">
+                        ${medStatus ? `
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+                            On medication
+                        ` : `
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                            Needs medication
+                        `}
+                    </span>
+                `;
+            }
+
+            // Determine status dot class
+            let statusDotClass = '';
+            if (ind.historyRequired) {
+                // Show purple dot for any indicator that depends on medical history
+                statusDotClass = 'check-history';
+            } else if (isFrailtyDependent || isSmokingDependent) {
+                statusDotClass = 'check-frailty'; // amber dot
+            } else if (medStatus === true) {
+                statusDotClass = 'met';
+            } else if (medStatus === false) {
+                statusDotClass = 'not-met';
+            }
+
+            // Handle combined indicators (multiple codes)
+            const codes = ind.codes || [ind.id];
+            const allPoints = ind.allPoints || [{ id: ind.id, points: ind.points, category: ind.categoryCode }];
+            const primaryId = codes[0];
+            const isSelected = codes.some(code => state.selectedIndicators.includes(code));
+            const combinedId = codes.join('-');
+            
+            // Format description - capitalise WITHOUT/WITH for frailty-dependent indicators when frailty unknown
+            let description = ind.description;
+            if (isFrailtyDependent) {
+                description = description
+                    .replace(/\bwithout\b/gi, '<strong>WITHOUT</strong>')
+                    .replace(/\bWITH\b/g, '<strong>WITH</strong>')
+                    .replace(/\bwith moderate/gi, '<strong>WITH</strong> moderate');
+            }
+
+            return `
+                <div class="indicator-card ${cardClass} ${isSelected ? 'selected' : ''}" data-id="${combinedId}" data-codes="${codes.join(',')}">
+                    <div class="indicator-main">
+                        <div class="indicator-select" onclick="event.stopPropagation(); toggleCombinedSelection('${codes.join(',')}')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+                        </div>
+                        <div class="indicator-action" onclick="toggleIndicatorExpand('${combinedId}')">${ind.action || ind.target}</div>
+                        <div class="indicator-status">
+                            ${statusDotClass ? `<span class="status-dot ${statusDotClass}"></span>` : ''}
+                        </div>
+                        <div class="indicator-expand" onclick="toggleIndicatorExpand('${combinedId}')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                        </div>
+                    </div>
+                    <div class="indicator-details">
+                        <div class="detail-description">${description}</div>
+                        <div class="detail-row">
+                            <span class="detail-label">Code${codes.length > 1 ? 's' : ''}</span>
+                            <span class="detail-value">${codes.map(c => `<span class="code">${c}</span>`).join(' ')}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Target</span>
+                            <span class="detail-value">${ind.target}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Timeframe</span>
+                            <span class="detail-value">${ind.timeframe}</span>
+                        </div>
+                        ${codes.length > 1 ? `
+                        <div class="detail-row">
+                            <span class="detail-label">Points</span>
+                            <span class="detail-value">${allPoints.map(p => `${p.id}: ${p.points}pts`).join(', ')}</span>
+                        </div>
+                        ` : ''}
+                        <div class="detail-tags">
+                            <span class="detail-tag points">${allPoints.reduce((sum, p) => sum + p.points, 0)} pts total</span>
+                            <span class="detail-tag">${ind.thresholds}</span>
+                        </div>
+                        ${ind.historyNote ? `
+                            <div class="history-alert">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                <span>${ind.historyNote}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleIndicatorExpand(indicatorId) {
+            const card = document.querySelector(`.indicator-card[data-id="${indicatorId}"]`);
+            if (card) {
+                card.classList.toggle('expanded');
+            }
+        }
+
+        function toggleCombinedSelection(codesString) {
+            const codes = codesString.split(',');
+            const allSelected = codes.every(code => state.selectedIndicators.includes(code));
+            
+            if (allSelected) {
+                // Deselect all
+                codes.forEach(code => {
+                    const index = state.selectedIndicators.indexOf(code);
+                    if (index !== -1) {
+                        state.selectedIndicators.splice(index, 1);
+                    }
+                });
+            } else {
+                // Select all
+                codes.forEach(code => {
+                    if (!state.selectedIndicators.includes(code)) {
+                        state.selectedIndicators.push(code);
+                    }
+                });
+            }
+            
+            // Update the card's selected state
+            const card = document.querySelector(`.indicator-card[data-codes="${codesString}"]`);
+            if (card) {
+                card.classList.toggle('selected', !allSelected);
+            }
+            
+            updateTabCounts();
+            updateConsultationView();
+        }
+
+        function toggleIndicatorSelection(indicatorId) {
+            const index = state.selectedIndicators.indexOf(indicatorId);
+            if (index === -1) {
+                state.selectedIndicators.push(indicatorId);
+            } else {
+                state.selectedIndicators.splice(index, 1);
+            }
+            
+            // Update the card's selected state
+            const card = document.querySelector(`.indicator-card[data-id="${indicatorId}"]`);
+            if (card) {
+                card.classList.toggle('selected');
+            }
+            
+            updateTabCounts();
+            updateConsultationView();
+        }
+
+        function updateTabCounts() {
+            const clinicalIndicators = filterIndicators(QOF_DATA.indicators.clinical);
+            const publicHealthIndicators = filterIndicators(QOF_DATA.indicators.publicHealth);
+            const combinedClinical = combineIndicators(clinicalIndicators);
+            const combinedPublicHealth = combineIndicators(publicHealthIndicators);
+            const totalIndicators = combinedClinical.length + combinedPublicHealth.length;
+            
+            // Count outstanding (unchecked) indicators
+            const allApplicable = [...clinicalIndicators, ...publicHealthIndicators];
+            const outstandingCount = allApplicable.filter(ind => 
+                !state.selectedIndicators.includes(ind.id)
+            ).length;
+            
+            document.getElementById('allCount').textContent = totalIndicators;
+            document.getElementById('selectedCount').textContent = outstandingCount;
+        }
+
+        function getAllIndicators() {
+            return [...QOF_DATA.indicators.clinical, ...QOF_DATA.indicators.publicHealth];
+        }
+
+        function updateConsultationView() {
+            const emptyState = document.getElementById('consultationEmpty');
+            const listContainer = document.getElementById('consultationList');
+            
+            // Get all applicable indicators
+            const clinicalIndicators = filterIndicators(QOF_DATA.indicators.clinical);
+            const publicHealthIndicators = filterIndicators(QOF_DATA.indicators.publicHealth);
+            const allApplicable = [...clinicalIndicators, ...publicHealthIndicators];
+            
+            // Outstanding = all applicable MINUS the completed (selected) ones
+            const outstandingInds = allApplicable.filter(ind => 
+                !state.selectedIndicators.includes(ind.id)
+            );
+            
+            if (outstandingInds.length === 0) {
+                emptyState.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                    </svg>
+                    <h3>All Done!</h3>
+                    <p>All applicable QOF indicators have been marked as completed for this patient.</p>
+                `;
+                emptyState.style.display = 'block';
+                listContainer.innerHTML = '';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            // Group by action type
+            const actionGroups = groupByActionType(outstandingInds);
+            
+            listContainer.innerHTML = actionGroups.map(group => `
+                <div class="consultation-group">
+                    <div class="consultation-group-header">${group.icon} ${group.name}</div>
+                    ${group.indicators.map(ind => renderConsultationCard(ind)).join('')}
+                </div>
+            `).join('');
+            
+            // Add mark complete button event listeners
+            listContainer.querySelectorAll('.consultation-complete').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = btn.dataset.id;
+                    toggleIndicatorSelection(id);
+                });
+            });
+        }
+
+        function renderConsultationCard(ind) {
+            return `
+                <div class="consultation-card">
+                    <button class="consultation-complete" data-id="${ind.id}" title="Mark as completed">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+                    </button>
+                    <div class="consultation-content">
+                        <div class="consultation-action">${ind.action || ind.target}</div>
+                        <div class="consultation-detail">${ind.target} · ${ind.id} · ${ind.points} pts</div>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
